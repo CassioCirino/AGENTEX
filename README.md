@@ -50,6 +50,13 @@ Isso:
 - cria o servico `DtLegacyAgent` com inicio automatico
 - inicia o servico
 
+Se o `DtLegacyAgent.exe` nao estiver na mesma pasta do `install.cmd`, o instalador baixa automaticamente do repositorio (branch `main`).
+
+Você pode ajustar a origem com:
+```
+set AGENT_DOWNLOAD_BASE=https://raw.githubusercontent.com/CassioCirino/AGENTEX/main/dist
+```
+
 Opcional: se voce quiser levar somente o EXE para o cliente, copie `DtLegacyAgent.exe` e `install.cmd` para a maquina e passe o caminho do EXE:
 
 ```cmd
@@ -67,27 +74,18 @@ uninstall.cmd
 Substitua `<org>/<repo>` pelo seu repositorio. Este exemplo baixa do `dist` na branch `main`.
 
 ```powershell
-$base = "https://raw.githubusercontent.com/<org>/<repo>/main/dist"
 $dir = "C:\Temp\DtLegacyAgent"
 New-Item -ItemType Directory -Force $dir | Out-Null
-$wc = New-Object Net.WebClient
-$wc.DownloadFile("$base/DtLegacyAgent.exe", "$dir\DtLegacyAgent.exe")
-$wc.DownloadFile("$base/install.cmd", "$dir\install.cmd")
-$wc.DownloadFile("$base/uninstall.cmd", "$dir\uninstall.cmd")
-$wc.DownloadFile("$base/agent.conf.example", "$dir\agent.conf.example")
+(New-Object Net.WebClient).DownloadFile("https://raw.githubusercontent.com/CassioCirino/AGENTEX/main/dist/install.cmd", "$dir\install.cmd")
 cmd /c ""$dir\install.cmd" https://<env>.live.dynatrace.com dt0c01...token..."
 ```
 
 Se nao houver PowerShell, use `bitsadmin` (Windows 2003/2008):
 
 ```cmd
-set BASE=https://raw.githubusercontent.com/<org>/<repo>/main/dist
 set DIR=C:\Temp\DtLegacyAgent
 mkdir %DIR%
-bitsadmin /transfer dt1 %BASE%/DtLegacyAgent.exe %DIR%\DtLegacyAgent.exe
-bitsadmin /transfer dt2 %BASE%/install.cmd %DIR%\install.cmd
-bitsadmin /transfer dt3 %BASE%/uninstall.cmd %DIR%\uninstall.cmd
-bitsadmin /transfer dt4 %BASE%/agent.conf.example %DIR%\agent.conf.example
+bitsadmin /transfer dt1 https://raw.githubusercontent.com/CassioCirino/AGENTEX/main/dist/install.cmd %DIR%\install.cmd
 %DIR%\install.cmd https://<env>.live.dynatrace.com dt0c01...token...
 ```
 
